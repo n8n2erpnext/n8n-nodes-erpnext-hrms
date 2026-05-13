@@ -1,0 +1,55 @@
+{
+  "name": "n8n-nodes-erpnext-hrms",
+  "version": "0.1.0",
+  "description": "n8n community nodes for ERPNext/Frappe HRMS v15-v16.",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "erpnext",
+    "frappe",
+    "hrms"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/n8n2erpnext/n8n-nodes-erpnext-hrms",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n8n2erpnext/n8n-nodes-erpnext-hrms.git"
+  },
+  "bugs": {
+    "url": "https://github.com/n8n2erpnext/n8n-nodes-erpnext-hrms/issues"
+  },
+  "author": "n8n2erpnext",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier --write .",
+    "lint": "eslint credentials nodes --ext .ts",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/ErpNextApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/ErpNextHrms/ErpNextHrms.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.3",
+    "@typescript-eslint/parser": "^8.59.3",
+    "eslint": "^8.57.0",
+    "gulp": "^5.0.0",
+    "n8n-workflow": "^1.80.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.6.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
