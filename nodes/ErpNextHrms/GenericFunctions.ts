@@ -8,6 +8,7 @@ import type {
 import { NodeApiError } from 'n8n-workflow';
 
 export interface FrappeListOptions {
+	apiVersion?: 'v1' | 'v2';
 	fields?: string[];
 	filters?: unknown;
 	limitStart?: number;
@@ -116,16 +117,28 @@ export async function frappeApiRequest(
 	}
 }
 
+function getDocumentEndpoint(apiVersion: 'v1' | 'v2', docType: string, name?: string): string {
+	const encodedDocType = encodeURIComponent(docType);
+	if (apiVersion === 'v2') {
+		const base = `/api/v2/document/${encodedDocType}`;
+		return name ? `${base}/${encodeURIComponent(name)}/` : base;
+	}
+
+	const base = `/api/resource/${encodedDocType}`;
+	return name ? `${base}/${encodeURIComponent(name)}` : base;
+}
+
+function getMethodEndpoint(apiVersion: 'v1' | 'v2', methodName: string): string {
+	return apiVersion === 'v2' ? `/api/v2/method/${methodName}` : `/api/method/${methodName}`;
+}
+
 export async function frappeGetDoc(
 	this: IExecuteFunctions,
 	docType: string,
 	name: string,
+	apiVersion: 'v1' | 'v2' = 'v1',
 ): Promise<IDataObject> {
-	const response = await frappeApiRequest.call(
-		this,
-		'GET',
-		`/api/resource/${encodeURIComponent(docType)}/${encodeURIComponent(name)}`,
-	);
+	const response = await frappeApiRequest.call(this, 'GET', getDocumentEndpoint(apiVersion, docType, name));
 	return response.data;
 }
 
@@ -142,11 +155,20 @@ export async function frappeGetManyDocs(
 	if (options.filters) {
 		qs.filters = JSON.stringify(options.filters);
 	}
-	if (options.limitStart !== undefined) {
-		qs.limit_start = options.limitStart;
-	}
-	if (options.limitPageLength !== undefined) {
-		qs.limit_page_length = options.limitPageLength;
+	if (options.apiVersion === 'v2') {
+		if (options.limitStart !== undefined) {
+			qs.start = options.limitStart;
+		}
+		if (options.limitPageLength !== undefined) {
+			qs.limit = options.limitPageLength;
+		}
+	} else {
+		if (options.limitStart !== undefined) {
+			qs.limit_start = options.limitStart;
+		}
+		if (options.limitPageLength !== undefined) {
+			qs.limit_page_length = options.limitPageLength;
+		}
 	}
 	if (options.orderBy) {
 		qs.order_by = options.orderBy;
@@ -155,7 +177,7 @@ export async function frappeGetManyDocs(
 	const response = await frappeApiRequest.call(
 		this,
 		'GET',
-		`/api/resource/${encodeURIComponent(docType)}`,
+		getDocumentEndpoint(options.apiVersion ?? 'v1', docType),
 		{},
 		qs,
 	);
@@ -166,13 +188,9 @@ export async function frappeCreateDoc(
 	this: IExecuteFunctions,
 	docType: string,
 	data: IDataObject,
+	apiVersion: 'v1' | 'v2' = 'v1',
 ): Promise<IDataObject> {
-	const response = await frappeApiRequest.call(
-		this,
-		'POST',
-		`/api/resource/${encodeURIComponent(docType)}`,
-		data,
-	);
+	const response = await frappeApiRequest.call(this, 'POST', getDocumentEndpoint(apiVersion, docType), data);
 	return response.data;
 }
 
@@ -181,11 +199,12 @@ export async function frappeUpdateDoc(
 	docType: string,
 	name: string,
 	data: IDataObject,
+	apiVersion: 'v1' | 'v2' = 'v1',
 ): Promise<IDataObject> {
 	const response = await frappeApiRequest.call(
 		this,
-		'PUT',
-		`/api/resource/${encodeURIComponent(docType)}/${encodeURIComponent(name)}`,
+		apiVersion === 'v2' ? 'PATCH' : 'PUT',
+		getDocumentEndpoint(apiVersion, docType, name),
 		data,
 	);
 	return response.data;
@@ -195,12 +214,9 @@ export async function frappeDeleteDoc(
 	this: IExecuteFunctions,
 	docType: string,
 	name: string,
+	apiVersion: 'v1' | 'v2' = 'v1',
 ): Promise<IDataObject> {
-	await frappeApiRequest.call(
-		this,
-		'DELETE',
-		`/api/resource/${encodeURIComponent(docType)}/${encodeURIComponent(name)}`,
-	);
+	await frappeApiRequest.call(this, 'DELETE', getDocumentEndpoint(apiVersion, docType, name));
 	return { success: true, name };
 }
 
@@ -220,7 +236,13 @@ export async function frappeRunMethod(
 	this: IExecuteFunctions,
 	methodName: string,
 	args: IDataObject,
+	apiVersion: 'v1' | 'v2' = 'v1',
 ): Promise<IDataObject> {
-	const response = await frappeApiRequest.call(this, 'POST', `/api/method/${methodName}`, args);
+	const response = await frappeApiRequest.call(
+		this,
+		'POST',
+		getMethodEndpoint(apiVersion, methodName),
+		args,
+	);
 	return response.message ?? response;
 }

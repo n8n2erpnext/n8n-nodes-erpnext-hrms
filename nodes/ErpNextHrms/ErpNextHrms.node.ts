@@ -111,6 +111,24 @@ export class ErpNextHrms implements INodeType {
 				default: 'employee',
 			},
 			{
+				displayName: 'API Version',
+				name: 'apiVersion',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'v1 - /api/resource (Stable)',
+						value: 'v1',
+					},
+					{
+						name: 'v2 - /api/v2/document (Frappe v16)',
+						value: 'v2',
+					},
+				],
+				default: 'v1',
+				description: 'Frappe REST API version to use for document and method requests',
+			},
+			{
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
@@ -309,16 +327,18 @@ export class ErpNextHrms implements INodeType {
 				let response: IDataObject | IDataObject[];
 
 				if (resource === 'frappeMethod') {
+					const apiVersion = this.getNodeParameter('apiVersion', itemIndex) as 'v1' | 'v2';
 					const methodName = this.getNodeParameter('methodName', itemIndex) as string;
 					const args = prepareData(this.getNodeParameter('argumentsJson', itemIndex));
-					response = await frappeRunMethod.call(this, methodName, args);
+					response = await frappeRunMethod.call(this, methodName, args, apiVersion);
 				} else {
+					const apiVersion = this.getNodeParameter('apiVersion', itemIndex) as 'v1' | 'v2';
 					const customDocType = this.getNodeParameter('customDocType', itemIndex, '') as string;
 					const docType = getDocType(resource, customDocType);
 
 					if (operation === 'get') {
 						const documentName = this.getNodeParameter('documentName', itemIndex) as string;
-						response = await frappeGetDoc.call(this, docType, documentName);
+						response = await frappeGetDoc.call(this, docType, documentName, apiVersion);
 					} else if (operation === 'getMany') {
 						const returnAll = this.getNodeParameter('returnAll', itemIndex) as boolean;
 						const limit = returnAll ? 1000 : (this.getNodeParameter('limit', itemIndex) as number);
@@ -331,6 +351,7 @@ export class ErpNextHrms implements INodeType {
 
 						if (!returnAll) {
 							response = await frappeGetManyDocs.call(this, docType, {
+								apiVersion,
 								fields,
 								filters,
 								limitPageLength: limit,
@@ -342,6 +363,7 @@ export class ErpNextHrms implements INodeType {
 							let hasMore = true;
 							while (hasMore) {
 								const page = await frappeGetManyDocs.call(this, docType, {
+									apiVersion,
 									fields,
 									filters,
 									limitStart,
@@ -359,17 +381,17 @@ export class ErpNextHrms implements INodeType {
 						}
 					} else if (operation === 'create') {
 						const data = prepareData(this.getNodeParameter('dataJson', itemIndex));
-						response = await frappeCreateDoc.call(this, docType, data);
+						response = await frappeCreateDoc.call(this, docType, data, apiVersion);
 					} else if (operation === 'update') {
 						const documentName = this.getNodeParameter('documentName', itemIndex) as string;
 						const data = prepareData(this.getNodeParameter('dataJson', itemIndex));
-						response = await frappeUpdateDoc.call(this, docType, documentName, data);
+						response = await frappeUpdateDoc.call(this, docType, documentName, data, apiVersion);
 					} else if (operation === 'delete') {
 						const documentName = this.getNodeParameter('documentName', itemIndex) as string;
-						response = await frappeDeleteDoc.call(this, docType, documentName);
+						response = await frappeDeleteDoc.call(this, docType, documentName, apiVersion);
 					} else if (operation === 'submit' || operation === 'cancel') {
 						const documentName = this.getNodeParameter('documentName', itemIndex) as string;
-						const doc = await frappeGetDoc.call(this, docType, documentName);
+						const doc = await frappeGetDoc.call(this, docType, documentName, apiVersion);
 						response = await frappeRunDocAction.call(this, operation, doc);
 					} else {
 						throw new NodeOperationError(this.getNode(), `Unsupported operation "${operation}".`, {
