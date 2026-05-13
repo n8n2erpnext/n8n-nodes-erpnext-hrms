@@ -4,3 +4,4 @@ dist/
 *.tgz
 .env
 .env.*
+SESSION_LOG.md
