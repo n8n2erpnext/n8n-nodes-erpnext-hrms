@@ -147,6 +147,24 @@ ERPNext HRMS node:
 - Limit: `10`
 - Order By: `modified desc`
 
+For Frappe/ERPNext v16 API v2, use the same workflow and set:
+
+```text
+API Version: v2
+```
+
+The node will call the v2 document endpoint:
+
+```text
+/api/v2/document/Employee
+```
+
+Example v2 test endpoint:
+
+```bash
+curl -i http://127.0.0.1:5678/webhook/erpnext-hrms-v2-get-employees
+```
+
 ### 3. Activate and Test
 
 Activate the workflow, then call:
@@ -176,6 +194,130 @@ Example response:
 ```
 
 If the response is `[]`, the workflow is working but ERPNext has no matching active Employee records.
+
+## Webhook From ERPNext v16 to n8n
+
+Use this pattern when ERPNext should call n8n automatically after an HRMS document is created or updated. For example, ERPNext can call a n8n workflow whenever an `Employee` record is saved.
+
+### 1. Create the n8n Webhook Receiver
+
+Create a workflow in n8n with a Webhook trigger:
+
+```text
+Webhook -> your processing nodes
+```
+
+Webhook node:
+
+- HTTP Method: `POST`
+- Path: `erpnext-employee-event`
+- Authentication: `None` for a private/internal test, or `Header Auth` for production
+- Respond: `Immediately` or `When Last Node Finishes`
+
+The production webhook URL will look like:
+
+```text
+https://n8n.example.com/webhook/erpnext-employee-event
+```
+
+On this VPS, if ERPNext and n8n are on the same host/network, you can also use the internal n8n URL from ERPNext:
+
+```text
+http://100.94.184.141:5678/webhook/erpnext-employee-event
+```
+
+Use the public URL if ERPNext cannot reach the internal n8n address.
+
+### 2. Add the Webhook in ERPNext/Frappe v16
+
+In ERPNext/Frappe Desk:
+
+1. Open the global search bar.
+2. Search for `Webhook`.
+3. Open `Webhook` from the Integrations area.
+4. Click `New`.
+
+Configure the Webhook:
+
+- Enabled: checked
+- Webhook Doctype: `Employee`
+- Doc Event: `on_update` for every save, or `after_insert` for newly created employees only
+- Request URL: your n8n production webhook URL
+- Request Method: `POST`
+- Request Structure: `JSON`
+- Webhook JSON: use the example below
+
+Example JSON body:
+
+```json
+{
+  "event": "employee_updated",
+  "doctype": "{{ doc.doctype }}",
+  "name": "{{ doc.name }}",
+  "employee_name": "{{ doc.employee_name }}",
+  "status": "{{ doc.status }}",
+  "company": "{{ doc.company }}",
+  "department": "{{ doc.department }}",
+  "modified": "{{ doc.modified }}"
+}
+```
+
+For a newly created Employee only, set:
+
+```text
+Doc Event: after_insert
+```
+
+For every save/update, set:
+
+```text
+Doc Event: on_update
+```
+
+### 3. Add Headers
+
+For a simple JSON webhook, add this header:
+
+```text
+Content-Type: application/json
+```
+
+For production, add a shared secret header and validate it in n8n:
+
+```text
+X-ERPNext-Webhook-Secret: your-long-random-secret
+```
+
+If you use Frappe's Webhook Secret field, Frappe adds an `X-Frappe-Webhook-Signature` header generated from the payload and secret. You can verify this signature in n8n with a Code node if needed.
+
+### 4. Test the ERPNext Webhook
+
+1. Activate the n8n workflow.
+2. In ERPNext, create or edit an Employee.
+3. Save the Employee.
+4. Open n8n executions and check the latest webhook execution.
+
+The n8n Webhook node should receive a body similar to:
+
+```json
+{
+  "event": "employee_updated",
+  "doctype": "Employee",
+  "name": "HR-EMP-00001",
+  "employee_name": "Tèo Văn Nguyễn",
+  "status": "Active",
+  "company": "Thái Duy Digital",
+  "department": "Human Resources - TDD",
+  "modified": "2026-05-13 13:07:37.000000"
+}
+```
+
+### 5. Common Issues
+
+- If ERPNext cannot reach the n8n URL, test from the ERPNext/LXD container with `curl`.
+- If the n8n public URL is protected by NetBird or another auth proxy, either allow ERPNext through that proxy or use an internal URL.
+- If n8n logs `ERR_ERL_UNEXPECTED_X_FORWARDED_FOR`, configure n8n trust proxy for your reverse proxy setup.
+- If the workflow does not run, make sure the n8n workflow is active and you are using the production `/webhook/` URL, not the test `/webhook-test/` URL.
 
 ### Reverse Proxy Notes
 

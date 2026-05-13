@@ -282,3 +282,104 @@ GET Webhook -> ERPNext HRMS
 ```text
 /webhook/erpnext-hrms-get-employees
 ```
+
+### 2026-05-13 README ERPNext v16 Webhook Guide
+
+- Added README documentation for creating a Webhook directly in ERPNext/Frappe v16.
+- Documented the direction:
+
+```text
+ERPNext Employee event -> n8n Webhook
+```
+
+- Documented n8n receiver setup:
+
+```text
+HTTP Method: POST
+Path: erpnext-employee-event
+Production URL: /webhook/erpnext-employee-event
+```
+
+- Documented ERPNext Webhook setup from Desk:
+  - Search `Webhook`
+  - Create a new Webhook
+  - Webhook Doctype: `Employee`
+  - Doc Event: `on_update` or `after_insert`
+  - Request Method: `POST`
+  - Request Structure: `JSON`
+  - JSON body using Jinja values from `doc`
+- Documented headers/security notes:
+  - `Content-Type: application/json`
+  - optional custom shared secret header
+  - optional Frappe `X-Frappe-Webhook-Signature`
+
+### 2026-05-13 API v2 Test
+
+- User requested testing the node with ERPNext/Frappe v16 API v2.
+- Created workflow artifact:
+
+```text
+n8n-webhook-erpnext-hrms-v2-get-employees.workflow.json
+```
+
+- Imported/published/activated the workflow in n8n:
+
+```text
+Workflow name: ERPNext HRMS V2 GET Employees Webhook
+Workflow id: cY31OLkUamjHrm02
+Webhook path: erpnext-hrms-v2-get-employees
+Local test URL: http://127.0.0.1:5678/webhook/erpnext-hrms-v2-get-employees
+```
+
+- Workflow shape:
+
+```text
+GET Webhook -> Get Active Employees V2
+```
+
+- ERPNext HRMS node parameters:
+
+```text
+Resource: Employee
+Operation: Get Many
+API Version: v2
+Fields: name,employee_name,status,company,department
+Filters JSON: [["status","=","Active"]]
+Limit: 10
+Order By: modified desc
+Credential: ERPNext account
+```
+
+- Restarted n8n so the production webhook was registered.
+- Tested:
+
+```text
+curl -i --connect-timeout 20 http://127.0.0.1:5678/webhook/erpnext-hrms-v2-get-employees
+```
+
+- Result:
+
+```json
+[
+  {
+    "name": "HR-EMP-00001",
+    "employee_name": "Tèo Văn Nguyễn",
+    "status": "Active",
+    "company": "Thái Duy Digital",
+    "department": "Human Resources - TDD"
+  }
+]
+```
+
+- n8n execution:
+
+```text
+Execution id: 3107
+Workflow id: cY31OLkUamjHrm02
+Status: success
+Mode: webhook
+Started: 2026-05-13 06:19:44.387+00
+Stopped: 2026-05-13 06:19:44.456+00
+```
+
+- Conclusion: API v2 `getMany` for Employee works against the ERPNext/Frappe v16 production site through this node.
