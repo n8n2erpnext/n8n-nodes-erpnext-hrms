@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-erpnext-hrms",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "n8n community nodes for ERPNext/Frappe HRMS v15-v16.",
   "keywords": [
     "n8n-community-node-package",
@@ -28,7 +28,7 @@
     "build": "tsc && gulp build:icons",
     "dev": "tsc --watch",
     "format": "prettier --write .",
-    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint credentials nodes --ext .ts",
+    "lint": "eslint credentials nodes --ext .ts",
     "prepublishOnly": "npm run build"
   },
   "files": [
@@ -50,10 +50,8 @@
     "@typescript-eslint/parser": "^8.59.3",
     "eslint": "^9.39.4",
     "gulp": "^5.0.0",
+    "n8n-workflow": "^1.80.0",
     "prettier": "^3.3.0",
     "typescript": "^5.6.0"
-  },
-  "dependencies": {
-    "n8n-workflow": "^1.80.0"
   }
 }

@@ -1,5 +1,6 @@
 import type {
 	ICredentialType,
+	ICredentialTestRequest,
 	INodeProperties,
 	Icon,
 	IAuthenticateGeneric,
@@ -71,7 +72,7 @@ export class ErpNextApi implements ICredentialType {
 		},
 	};
 
-	test = {
+	test: ICredentialTestRequest = {
 		request: {
 			baseURL: '={{$credentials.siteUrl.replace(/\\/$/, "")}}',
 			url: '/api/method/frappe.auth.get_logged_user',

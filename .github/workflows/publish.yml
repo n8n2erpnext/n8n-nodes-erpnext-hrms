@@ -39,6 +39,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: n8n Node Lint
+        run: npx @n8n/node-cli lint
+
       - name: Build
         run: npm run build
 
