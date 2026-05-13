@@ -1,0 +1,459 @@
+[
+  {
+    "id": "cY31OLkUamjHrm04",
+    "name": "ERPNext HRMS Final GET Audit Webhooks",
+    "active": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "audit-hrms-employee",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [0, 0],
+        "id": "9b2c5aa3-d4fd-4e1b-a014-5f3dc8c71101",
+        "name": "Webhook Employee",
+        "webhookId": "audit-hrms-employee"
+      },
+      {
+        "parameters": {
+          "resource": "employee",
+          "apiVersion": "v2",
+          "operation": "getMany",
+          "fields": "name,employee_name,status,company,department",
+          "filtersJson": "[]",
+          "returnAll": false,
+          "limit": 5,
+          "orderBy": "modified desc"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [280, 0],
+        "id": "6b6b96ec-0447-4202-8698-ff955e839201",
+        "name": "Get Employee",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "audit-hrms-attendance",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [0, 160],
+        "id": "2a901d2d-4c37-4d70-bfd7-e910c86d1202",
+        "name": "Webhook Attendance",
+        "webhookId": "audit-hrms-attendance"
+      },
+      {
+        "parameters": {
+          "resource": "attendance",
+          "apiVersion": "v2",
+          "operation": "getMany",
+          "fields": "name,employee,status,attendance_date,company",
+          "filtersJson": "[]",
+          "returnAll": false,
+          "limit": 5,
+          "orderBy": "modified desc"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [280, 160],
+        "id": "1d4cab36-974b-4676-b63b-eb3207511203",
+        "name": "Get Attendance",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "audit-hrms-employee-checkin",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [0, 320],
+        "id": "8d130d36-7ac3-4761-9708-6708012a1204",
+        "name": "Webhook Employee Checkin",
+        "webhookId": "audit-hrms-employee-checkin"
+      },
+      {
+        "parameters": {
+          "resource": "employeeCheckin",
+          "apiVersion": "v2",
+          "operation": "getMany",
+          "fields": "name,employee,time,log_type",
+          "filtersJson": "[]",
+          "returnAll": false,
+          "limit": 5,
+          "orderBy": "modified desc"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [280, 320],
+        "id": "cb3071ed-5927-4f5f-a6e6-81cf2b1f1205",
+        "name": "Get Employee Checkin",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "audit-hrms-leave-application",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [0, 480],
+        "id": "dcbf0b1b-aedc-4c38-a3ac-78696e831206",
+        "name": "Webhook Leave Application",
+        "webhookId": "audit-hrms-leave-application"
+      },
+      {
+        "parameters": {
+          "resource": "leaveApplication",
+          "apiVersion": "v2",
+          "operation": "getMany",
+          "fields": "name,employee,status,leave_type,from_date,to_date",
+          "filtersJson": "[]",
+          "returnAll": false,
+          "limit": 5,
+          "orderBy": "modified desc"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [280, 480],
+        "id": "7e8d6d73-cd7b-4d6d-bc49-91c6c7311207",
+        "name": "Get Leave Application",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "audit-hrms-leave-allocation",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [0, 640],
+        "id": "ef8d8346-a481-4f37-8287-af0cfa2f1208",
+        "name": "Webhook Leave Allocation",
+        "webhookId": "audit-hrms-leave-allocation"
+      },
+      {
+        "parameters": {
+          "resource": "leaveAllocation",
+          "apiVersion": "v2",
+          "operation": "getMany",
+          "fields": "name,employee,leave_type,total_leaves_allocated,from_date,to_date",
+          "filtersJson": "[]",
+          "returnAll": false,
+          "limit": 5,
+          "orderBy": "modified desc"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [280, 640],
+        "id": "3d0819e7-6b6d-40bb-a50f-ac1d16da1209",
+        "name": "Get Leave Allocation",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "audit-hrms-expense-claim",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [0, 800],
+        "id": "6303e42f-53b4-44f1-a304-b75301421210",
+        "name": "Webhook Expense Claim",
+        "webhookId": "audit-hrms-expense-claim"
+      },
+      {
+        "parameters": {
+          "resource": "expenseClaim",
+          "apiVersion": "v2",
+          "operation": "getMany",
+          "fields": "name,employee,status,total_claimed_amount,company",
+          "filtersJson": "[]",
+          "returnAll": false,
+          "limit": 5,
+          "orderBy": "modified desc"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [280, 800],
+        "id": "a95c392c-bdf7-4538-b829-125a5e651211",
+        "name": "Get Expense Claim",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "audit-hrms-salary-slip",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [0, 960],
+        "id": "fb3b6612-4371-495b-8e21-f41e97b91212",
+        "name": "Webhook Salary Slip",
+        "webhookId": "audit-hrms-salary-slip"
+      },
+      {
+        "parameters": {
+          "resource": "salarySlip",
+          "apiVersion": "v2",
+          "operation": "getMany",
+          "fields": "name,employee,status,company,start_date,end_date",
+          "filtersJson": "[]",
+          "returnAll": false,
+          "limit": 5,
+          "orderBy": "modified desc"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [280, 960],
+        "id": "0964e669-33b6-4d28-9144-d533fe491213",
+        "name": "Get Salary Slip",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "audit-hrms-shift-assignment",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [0, 1120],
+        "id": "7101a92b-ec7e-49ac-a8d5-491a42651214",
+        "name": "Webhook Shift Assignment",
+        "webhookId": "audit-hrms-shift-assignment"
+      },
+      {
+        "parameters": {
+          "resource": "shiftAssignment",
+          "apiVersion": "v2",
+          "operation": "getMany",
+          "fields": "name,employee,status,shift_type,start_date,end_date",
+          "filtersJson": "[]",
+          "returnAll": false,
+          "limit": 5,
+          "orderBy": "modified desc"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [280, 1120],
+        "id": "a5e711af-1844-4c61-9cb5-dfe07a451215",
+        "name": "Get Shift Assignment",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "audit-hrms-holiday-list",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [0, 1280],
+        "id": "5ba46803-c035-44ad-9111-962d68e91216",
+        "name": "Webhook Holiday List",
+        "webhookId": "audit-hrms-holiday-list"
+      },
+      {
+        "parameters": {
+          "resource": "holidayList",
+          "apiVersion": "v2",
+          "operation": "getMany",
+          "fields": "name,holiday_list_name,from_date,to_date",
+          "filtersJson": "[]",
+          "returnAll": false,
+          "limit": 5,
+          "orderBy": "modified desc"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [280, 1280],
+        "id": "acaa7806-4543-4ed8-b60b-fc811ea51217",
+        "name": "Get Holiday List",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "audit-hrms-custom-company",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [0, 1440],
+        "id": "4a8b33d9-d8cd-4c23-84c6-6fd58cd51218",
+        "name": "Webhook Custom Company",
+        "webhookId": "audit-hrms-custom-company"
+      },
+      {
+        "parameters": {
+          "resource": "customDocType",
+          "apiVersion": "v2",
+          "operation": "getMany",
+          "customDocType": "Company",
+          "fields": "name",
+          "filtersJson": "[]",
+          "returnAll": false,
+          "limit": 5,
+          "orderBy": "modified desc"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [280, 1440],
+        "id": "dd7f6c3c-aa74-49a6-a549-0323e7b51219",
+        "name": "Get Custom Company",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "audit-hrms-method-employee-count",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [0, 1600],
+        "id": "1ac52d83-fcaa-4550-b7fb-b87598291220",
+        "name": "Webhook Method Employee Count",
+        "webhookId": "audit-hrms-method-employee-count"
+      },
+      {
+        "parameters": {
+          "resource": "frappeMethod",
+          "apiVersion": "v1",
+          "operation": "runMethod",
+          "methodName": "frappe.client.get_count",
+          "argumentsJson": "{\"doctype\":\"Employee\"}"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [280, 1600],
+        "id": "fb703310-4608-4669-a3e5-0f235c131221",
+        "name": "Run Employee Count Method",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook Employee": {"main": [[{"node": "Get Employee", "type": "main", "index": 0}]]},
+      "Get Employee": {"main": [[]]},
+      "Webhook Attendance": {"main": [[{"node": "Get Attendance", "type": "main", "index": 0}]]},
+      "Get Attendance": {"main": [[]]},
+      "Webhook Employee Checkin": {"main": [[{"node": "Get Employee Checkin", "type": "main", "index": 0}]]},
+      "Get Employee Checkin": {"main": [[]]},
+      "Webhook Leave Application": {"main": [[{"node": "Get Leave Application", "type": "main", "index": 0}]]},
+      "Get Leave Application": {"main": [[]]},
+      "Webhook Leave Allocation": {"main": [[{"node": "Get Leave Allocation", "type": "main", "index": 0}]]},
+      "Get Leave Allocation": {"main": [[]]},
+      "Webhook Expense Claim": {"main": [[{"node": "Get Expense Claim", "type": "main", "index": 0}]]},
+      "Get Expense Claim": {"main": [[]]},
+      "Webhook Salary Slip": {"main": [[{"node": "Get Salary Slip", "type": "main", "index": 0}]]},
+      "Get Salary Slip": {"main": [[]]},
+      "Webhook Shift Assignment": {"main": [[{"node": "Get Shift Assignment", "type": "main", "index": 0}]]},
+      "Get Shift Assignment": {"main": [[]]},
+      "Webhook Holiday List": {"main": [[{"node": "Get Holiday List", "type": "main", "index": 0}]]},
+      "Get Holiday List": {"main": [[]]},
+      "Webhook Custom Company": {"main": [[{"node": "Get Custom Company", "type": "main", "index": 0}]]},
+      "Get Custom Company": {"main": [[]]},
+      "Webhook Method Employee Count": {"main": [[{"node": "Run Employee Count Method", "type": "main", "index": 0}]]},
+      "Run Employee Count Method": {"main": [[]]}
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate"
+    },
+    "staticData": null,
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "tags": []
+  }
+]

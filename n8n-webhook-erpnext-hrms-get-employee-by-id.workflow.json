@@ -1,0 +1,133 @@
+[
+  {
+    "id": "cY31OLkUamjHrm03",
+    "name": "ERPNext HRMS GET Employee By ID Webhooks",
+    "active": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "erpnext-hrms-get-employee",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          -120
+        ],
+        "id": "b6ec5b2d-b448-4654-9562-859d92dcbbe7",
+        "name": "GET Employee Webhook",
+        "webhookId": "erpnext-hrms-get-employee"
+      },
+      {
+        "parameters": {
+          "resource": "employee",
+          "apiVersion": "v1",
+          "operation": "get",
+          "documentName": "={{$json.query.name || \"HR-EMP-00001\"}}"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [
+          280,
+          -120
+        ],
+        "id": "d7366ca6-421b-4b5f-b059-93e78f41359e",
+        "name": "Get Employee V1",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "erpnext-hrms-v2-get-employee",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          120
+        ],
+        "id": "1b43fc84-28ea-4241-9dab-8503a91f2cb9",
+        "name": "GET Employee V2 Webhook",
+        "webhookId": "erpnext-hrms-v2-get-employee"
+      },
+      {
+        "parameters": {
+          "resource": "employee",
+          "apiVersion": "v2",
+          "operation": "get",
+          "documentName": "={{$json.query.name || \"HR-EMP-00001\"}}"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [
+          280,
+          120
+        ],
+        "id": "d2e75ce2-4687-4eea-ae95-56d09c94c73b",
+        "name": "Get Employee V2",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "GET Employee Webhook": {
+        "main": [
+          [
+            {
+              "node": "Get Employee V1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Employee V1": {
+        "main": [
+          []
+        ]
+      },
+      "GET Employee V2 Webhook": {
+        "main": [
+          [
+            {
+              "node": "Get Employee V2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Employee V2": {
+        "main": [
+          []
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate"
+    },
+    "staticData": null,
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "tags": []
+  }
+]

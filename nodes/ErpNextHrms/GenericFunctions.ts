@@ -128,7 +128,7 @@ function getDocumentEndpoint(apiVersion: 'v1' | 'v2', docType: string, name?: st
 	const encodedDocType = encodeURIComponent(docType);
 	if (apiVersion === 'v2') {
 		const base = `/api/v2/document/${encodedDocType}`;
-		return name ? `${base}/${encodeURIComponent(name)}/` : base;
+		return name ? `${base}/${encodeURIComponent(name)}` : base;
 	}
 
 	const base = `/api/resource/${encodedDocType}`;
