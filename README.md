@@ -117,8 +117,8 @@ Authorization: token api_key:api_secret
 
 When n8n and ERPNext run on the same VPS, you can point n8n at the internal ERPNext address and still send the public ERPNext host header:
 
-- Site URL: `http://10.192.135.2:8001`
-- Site Host Header: `erp.thaiduy.digital`
+- Site URL: `http://erpnext.internal:8001`
+- Site Host Header: `erp.example.com`
 
 This avoids public reverse-proxy authentication while still letting ERPNext receive the expected site host.
 
@@ -189,8 +189,8 @@ Client / Browser / BI Tool
 
 In n8n, create or edit an `ERPNext API` credential:
 
-- Site URL: `http://10.192.135.2:8001`
-- Site Host Header: `erp.thaiduy.digital`
+- Site URL: `http://erpnext.internal:8001`
+- Site Host Header: `erp.example.com`
 - API Key: your ERPNext API key
 - API Secret: your ERPNext API secret
 - Ignore SSL Issues: `false`
@@ -266,10 +266,10 @@ Example response:
 [
   {
     "name": "HR-EMP-00001",
-    "employee_name": "Tèo Văn Nguyễn",
+    "employee_name": "Jane Doe",
     "status": "Active",
-    "company": "Thái Duy Digital",
-    "department": "Human Resources - TDD"
+    "company": "Example Company",
+    "department": "Human Resources - EX"
   }
 ]
 ```
@@ -312,7 +312,7 @@ https://n8n.example.com/webhook/erpnext-employee-event
 On this VPS, if ERPNext and n8n are on the same host/network, you can also use the internal n8n URL from ERPNext:
 
 ```text
-http://100.94.184.141:5678/webhook/erpnext-employee-event
+http://n8n.internal:5678/webhook/erpnext-employee-event
 ```
 
 Use the public URL if ERPNext cannot reach the internal n8n address.
@@ -397,10 +397,10 @@ The n8n Webhook node should receive a body similar to:
   "event": "employee_updated",
   "doctype": "Employee",
   "name": "HR-EMP-00001",
-  "employee_name": "Tèo Văn Nguyễn",
+  "employee_name": "Jane Doe",
   "status": "Active",
-  "company": "Thái Duy Digital",
-  "department": "Human Resources - TDD",
+  "company": "Example Company",
+  "department": "Human Resources - EX",
   "modified": "2026-05-13 13:07:37.000000"
 }
 ```
@@ -414,7 +414,7 @@ The n8n Webhook node should receive a body similar to:
 
 ## Reverse Proxy Notes
 
-If `https://erp.thaiduy.digital` is protected by NetBird or another reverse-proxy auth layer, n8n server-side requests may be blocked before they reach ERPNext. In that case:
+If `https://erp.example.com` is protected by NetBird or another reverse-proxy auth layer, n8n server-side requests may be blocked before they reach ERPNext. In that case:
 
 - Use the internal ERPNext URL in `Site URL`.
 - Set `Site Host Header` to the public ERPNext host.

@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-erpnext-hrms",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "n8n community nodes for ERPNext/Frappe HRMS v15-v16.",
   "keywords": [
     "n8n-community-node-package",
@@ -18,13 +18,17 @@
   "bugs": {
     "url": "https://github.com/n8n2erpnext/n8n-nodes-erpnext-hrms/issues"
   },
-  "author": "n8n2erpnext",
+  "author": {
+    "name": "Thái Duy",
+    "email": "th.dangduy@gmail.com",
+    "url": "https://thaiduy.digital"
+  },
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc && gulp build:icons",
     "dev": "tsc --watch",
     "format": "prettier --write .",
-    "lint": "eslint credentials nodes --ext .ts",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint credentials nodes --ext .ts",
     "prepublishOnly": "npm run build"
   },
   "files": [
@@ -40,10 +44,11 @@
     ]
   },
   "devDependencies": {
+    "@n8n/node-cli": "^0.30.1",
     "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.59.3",
     "@typescript-eslint/parser": "^8.59.3",
-    "eslint": "^8.57.0",
+    "eslint": "^9.39.4",
     "gulp": "^5.0.0",
     "prettier": "^3.3.0",
     "typescript": "^5.6.0"
