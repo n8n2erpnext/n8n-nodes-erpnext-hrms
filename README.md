@@ -16,6 +16,44 @@ Typical users:
 
 The node is intentionally conservative: it exposes standard HRMS document operations, supports Frappe API v1 and v2, and allows controlled fallback access to custom DocTypes and whitelisted Frappe methods.
 
+## Architecture At A Glance
+
+Read workflow from left to right:
+
+```text
+ERPNext / Frappe HRMS  <---- API token ---->  n8n ERPNext HRMS node  <---- webhook/API ---->  Client / App / Report
+```
+
+Common read pattern:
+
+```text
+Client
+  -> n8n Webhook
+  -> ERPNext HRMS node
+  -> Frappe REST API
+  -> ERPNext HRMS DocType
+  -> filtered JSON response
+```
+
+Common ERPNext event pattern:
+
+```text
+ERPNext Webhook
+  -> n8n Webhook Trigger
+  -> validation / mapping / approval logic
+  -> ERPNext HRMS node or downstream systems
+```
+
+Recommended production network pattern:
+
+```text
+Public Client
+  -> HTTPS reverse proxy / VPN / allowlist
+  -> n8n
+  -> private network or internal VPS address
+  -> ERPNext / Frappe site
+```
+
 ## Supported Resources
 
 - Employee
@@ -55,6 +93,10 @@ The node supports both ERPNext/Frappe document API styles:
 
 Use `v1` for broad compatibility. Use `v2` when your ERPNext/Frappe v16 environment is ready for the newer document API behavior.
 
+Reference:
+
+- [Frappe REST API](https://docs.frappe.io/framework/user/en/api/rest)
+
 ## Credentials
 
 Create an API key and secret in ERPNext/Frappe, then configure:
@@ -81,6 +123,12 @@ When n8n and ERPNext run on the same VPS, you can point n8n at the internal ERPN
 This avoids public reverse-proxy authentication while still letting ERPNext receive the expected site host.
 
 For production, create a dedicated ERPNext integration user instead of using a daily admin account. Give that user only the roles required for the workflows it runs.
+
+Official Frappe references:
+
+- [Frappe REST API authentication](https://docs.frappe.io/framework/user/en/api/rest)
+- [Frappe token based authentication](https://docs.frappe.io/framework/v15/user/en/guides/integration/rest_api/token_based_authentication)
+- [Generate Frappe API key and secret](https://docs.frappe.io/framework/v15/user/en/guides/integration/how_to_setup_token_based_auth)
 
 ## Examples
 
@@ -128,6 +176,14 @@ Run a whitelisted Frappe method:
 ## Webhook From n8n to ERPNext HRMS
 
 Use this pattern when you want an HTTP GET endpoint in n8n that returns HRMS data from ERPNext.
+
+```text
+Client / Browser / BI Tool
+  -> GET n8n webhook URL
+  -> ERPNext HRMS node
+  -> GET /api/resource or /api/v2/document
+  -> JSON response
+```
 
 ### 1. Configure the ERPNext Credential
 
@@ -224,6 +280,14 @@ If the response is `[]`, the workflow is working but ERPNext has no matching act
 
 Use this pattern when ERPNext should call n8n automatically after an HRMS document is created or updated. For example, ERPNext can call a n8n workflow whenever an `Employee` record is saved.
 
+```text
+ERPNext Doc Event
+  -> Frappe Webhook
+  -> POST n8n webhook URL
+  -> n8n workflow
+  -> validation, notification, sync, approval, or downstream automation
+```
+
 ### 1. Create the n8n Webhook Receiver
 
 Create a workflow in n8n with a Webhook trigger:
@@ -314,6 +378,10 @@ X-ERPNext-Webhook-Secret: your-long-random-secret
 ```
 
 If you use Frappe's Webhook Secret field, Frappe adds an `X-Frappe-Webhook-Signature` header generated from the payload and secret. You can verify this signature in n8n with a Code node if needed.
+
+Official Frappe reference:
+
+- [Frappe Webhooks](https://docs.frappe.io/framework/user/en/guides/integration/webhooks)
 
 ### 4. Test the ERPNext Webhook
 
@@ -427,6 +495,17 @@ npm run build
 
 For local n8n testing, link this package into your n8n custom nodes directory or install it from a packed tarball.
 
+Useful n8n references:
+
+- [n8n community nodes installation](https://docs.n8n.io/integrations/community-nodes/installation/)
+- [Install community nodes from the n8n GUI](https://docs.n8n.io/integrations/community-nodes/installation/gui-install/)
+- [Manual community node installation](https://docs.n8n.io/integrations/community-nodes/installation/manual-install/)
+- [Using community nodes](https://docs.n8n.io/integrations/community-nodes/usage/)
+- [Creating n8n nodes](https://docs.n8n.io/integrations/creating-nodes/)
+- [Using the n8n-node tool](https://docs.n8n.io/integrations/creating-nodes/build/n8n-node/)
+- [n8n node linter](https://docs.n8n.io/integrations/creating-nodes/test/node-linter/)
+- [Submit community nodes](https://docs.n8n.io/integrations/creating-nodes/deploy/submit-community-nodes/)
+
 ## Scope And Roadmap
 
 This package is intentionally HRMS-focused. Other ERPNext modules should live in separate packages so each module can evolve independently:
@@ -442,6 +521,29 @@ Recommended next hardening tasks before wider public adoption:
 - Add credential redaction checks around error messages.
 - Add sample workflows that use limited fields by default.
 - Add a production security checklist to release notes for every package version.
+
+## Official References
+
+Frappe / ERPNext:
+
+- [ERPNext introduction](https://docs.frappe.io/erpnext)
+- [Frappe HR overview](https://docs.frappe.io/erpnext/user/manual/en/human-resources)
+- [Employee](https://docs.frappe.io/erpnext/user/manual/en/employee)
+- [Attendance](https://docs.frappe.io/erpnext/user/manual/en/attendance)
+- [Leave Application](https://docs.frappe.io/erpnext/user/manual/en/leave-application)
+- [Frappe REST API](https://docs.frappe.io/framework/user/en/api/rest)
+- [Frappe token based authentication](https://docs.frappe.io/framework/v15/user/en/guides/integration/rest_api/token_based_authentication)
+- [Generate Frappe API key and secret](https://docs.frappe.io/framework/v15/user/en/guides/integration/how_to_setup_token_based_auth)
+- [Frappe Webhooks](https://docs.frappe.io/framework/user/en/guides/integration/webhooks)
+
+n8n:
+
+- [n8n integrations and nodes overview](https://docs.n8n.io/integrations/)
+- [n8n community nodes installation](https://docs.n8n.io/integrations/community-nodes/installation/)
+- [Manual community node installation](https://docs.n8n.io/integrations/community-nodes/installation/manual-install/)
+- [Using community nodes](https://docs.n8n.io/integrations/community-nodes/usage/)
+- [Creating n8n nodes](https://docs.n8n.io/integrations/creating-nodes/)
+- [Submit community nodes](https://docs.n8n.io/integrations/creating-nodes/deploy/submit-community-nodes/)
 
 ## License
 
