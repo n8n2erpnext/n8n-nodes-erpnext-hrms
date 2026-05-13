@@ -39,6 +39,7 @@ For Frappe methods:
 Create an API key and secret in ERPNext/Frappe, then configure:
 
 - Site URL: `https://erp.example.com`
+- Site Host Header, optional: `erp.example.com`
 - API Key
 - API Secret
 - Ignore SSL Issues, optional
@@ -48,6 +49,13 @@ The node authenticates with:
 ```http
 Authorization: token api_key:api_secret
 ```
+
+When n8n and ERPNext run on the same VPS, you can point n8n at the internal ERPNext address and still send the public ERPNext host header:
+
+- Site URL: `http://10.192.135.2:8001`
+- Site Host Header: `erp.thaiduy.digital`
+
+This avoids public reverse-proxy authentication while still letting ERPNext receive the expected site host.
 
 ## Examples
 
@@ -91,6 +99,91 @@ Run a whitelisted Frappe method:
   }
 }
 ```
+
+## Webhook From n8n to ERPNext HRMS
+
+Use this pattern when you want an HTTP GET endpoint in n8n that returns HRMS data from ERPNext.
+
+### 1. Configure the ERPNext Credential
+
+In n8n, create or edit an `ERPNext API` credential:
+
+- Site URL: `http://10.192.135.2:8001`
+- Site Host Header: `erp.thaiduy.digital`
+- API Key: your ERPNext API key
+- API Secret: your ERPNext API secret
+- Ignore SSL Issues: `false`
+
+If your ERPNext site is directly reachable without an internal proxy, use the public URL instead:
+
+```text
+https://erp.example.com
+```
+
+### 2. Create the Workflow
+
+Create a workflow with these nodes:
+
+```text
+GET Webhook -> ERPNext HRMS
+```
+
+Webhook node:
+
+- HTTP Method: `GET`
+- Path: `erpnext-hrms-get-employees`
+- Respond: `When Last Node Finishes`
+- Response Data: `All Entries`
+
+ERPNext HRMS node:
+
+- Credential: your `ERPNext API` credential
+- Resource: `Employee`
+- Operation: `Get Many`
+- API Version: `v1`
+- Fields: `name,employee_name,status,company,department`
+- Filters JSON: `[["status","=","Active"]]`
+- Return All: `false`
+- Limit: `10`
+- Order By: `modified desc`
+
+### 3. Activate and Test
+
+Activate the workflow, then call:
+
+```bash
+curl -i https://n8n.example.com/webhook/erpnext-hrms-get-employees
+```
+
+On the local VPS, you can test without going through the public proxy:
+
+```bash
+curl -i http://127.0.0.1:5678/webhook/erpnext-hrms-get-employees
+```
+
+Example response:
+
+```json
+[
+  {
+    "name": "HR-EMP-00001",
+    "employee_name": "Tèo Văn Nguyễn",
+    "status": "Active",
+    "company": "Thái Duy Digital",
+    "department": "Human Resources - TDD"
+  }
+]
+```
+
+If the response is `[]`, the workflow is working but ERPNext has no matching active Employee records.
+
+### Reverse Proxy Notes
+
+If `https://erp.thaiduy.digital` is protected by NetBird or another reverse-proxy auth layer, n8n server-side requests may be blocked before they reach ERPNext. In that case:
+
+- Use the internal ERPNext URL in `Site URL`.
+- Set `Site Host Header` to the public ERPNext host.
+- Keep the API key and secret from the ERPNext user that has permission to read/write the target DocType.
 
 ## Development
 

@@ -99,6 +99,7 @@ export async function frappeApiRequest(
 ): Promise<any> {
 	const credentials = await this.getCredentials('erpNextApi');
 	const baseURL = normalizeSiteUrl(credentials.siteUrl as string);
+	const siteHost = credentials.siteHost as string | undefined;
 
 	const options: IHttpRequestOptions = {
 		method,
@@ -109,6 +110,12 @@ export async function frappeApiRequest(
 		json: true,
 		skipSslCertificateValidation: credentials.allowUnauthorizedCerts as boolean,
 	};
+
+	if (siteHost) {
+		options.headers = {
+			Host: siteHost,
+		};
+	}
 
 	try {
 		return await this.helpers.httpRequestWithAuthentication.call(this, 'erpNextApi', options);

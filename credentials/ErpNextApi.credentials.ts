@@ -25,6 +25,15 @@ export class ErpNextApi implements ICredentialType {
 			description: 'Base URL of your Frappe/ERPNext site',
 		},
 		{
+			displayName: 'Site Host Header',
+			name: 'siteHost',
+			type: 'string',
+			default: '',
+			placeholder: 'erp.example.com',
+			description:
+				'Optional Host header to send to ERPNext. Useful when n8n connects through an internal IP but ERPNext expects the public site host.',
+		},
+		{
 			displayName: 'API Key',
 			name: 'apiKey',
 			type: 'string',
@@ -67,6 +76,9 @@ export class ErpNextApi implements ICredentialType {
 			baseURL: '={{$credentials.siteUrl.replace(/\\/$/, "")}}',
 			url: '/api/method/frappe.auth.get_logged_user',
 			method: 'GET' as const,
+			headers: {
+				Host: '={{$credentials.siteHost || $credentials.siteUrl.replace(/^https?:\\/\\//, "").replace(/\\/.*$/, "")}}',
+			},
 		},
 	};
 }

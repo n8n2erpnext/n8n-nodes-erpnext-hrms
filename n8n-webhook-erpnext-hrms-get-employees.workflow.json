@@ -1,0 +1,81 @@
+[
+  {
+    "id": "cY31OLkUamjHrm01",
+    "name": "ERPNext HRMS GET Employees Webhook",
+    "active": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "erpnext-hrms-get-employees",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "1f68f4a2-c2d1-4d23-86d3-399a89df2b1f",
+        "name": "GET Webhook",
+        "webhookId": "erpnext-hrms-get-employees"
+      },
+      {
+        "parameters": {
+          "resource": "employee",
+          "apiVersion": "v1",
+          "operation": "getMany",
+          "fields": "name,employee_name,status,company,department",
+          "filtersJson": "[[\"status\",\"=\",\"Active\"]]",
+          "returnAll": false,
+          "limit": 10,
+          "orderBy": "modified desc"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [
+          260,
+          0
+        ],
+        "id": "aa4533ad-1f34-423c-9c78-1d14920d0345",
+        "name": "Get Active Employees",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "GET Webhook": {
+        "main": [
+          [
+            {
+              "node": "Get Active Employees",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Active Employees": {
+        "main": [
+          []
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate"
+    },
+    "staticData": null,
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "tags": []
+  }
+]

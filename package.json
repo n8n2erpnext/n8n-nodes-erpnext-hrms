@@ -45,13 +45,10 @@
     "@typescript-eslint/parser": "^8.59.3",
     "eslint": "^8.57.0",
     "gulp": "^5.0.0",
-    "n8n-workflow": "^1.80.0",
     "prettier": "^3.3.0",
     "typescript": "^5.6.0"
   },
-  "peerDependenciesMeta": {
-    "n8n-workflow": {
-      "optional": true
-    }
+  "dependencies": {
+    "n8n-workflow": "^1.80.0"
   }
 }
