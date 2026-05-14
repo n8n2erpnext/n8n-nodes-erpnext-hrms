@@ -435,6 +435,250 @@ If `https://erp.example.com` is protected by NetBird or another reverse-proxy au
 - Set `Site Host Header` to the public ERPNext host.
 - Keep the API key and secret from the ERPNext user that has permission to read/write the target DocType.
 
+## Verified HRMS Audit Runs
+
+These audit runs were executed against the ERPNext LXD test instance for `erp.thaiduy.digital`.
+
+### Security Audit And GET Retest
+
+The enterprise-style security audit covered repository leakage, package contents, dependency advisories, GET behavior, and light stress testing.
+
+Repository secret scan:
+
+```text
+No real API key, API secret, private key, bearer token, or credential material was found in source files.
+Matches were documentation placeholders, credential field names, or operational notes.
+```
+
+Package contents check:
+
+```text
+npm pack --dry-run
+Tarball contains dist/**, README.md, LICENSE, and package.json.
+No SESSION_LOG.md, workflow JSON, .env, DB dump, credential export, source TypeScript, or node_modules.
+```
+
+Dependency audit:
+
+```text
+npm audit --omit=dev
+form-data advisory inherited through n8n-workflow
+Do not run npm audit fix --force blindly because it would upgrade n8n-workflow to a breaking version.
+```
+
+GET single security finding:
+
+```text
+operation: get returned the full Employee document for HR-EMP-00001.
+This is expected Frappe behavior, but it can expose HR/PII fields if a single-document GET webhook is public.
+```
+
+Mitigation:
+
+```text
+Temporary get-single workflow was deactivated after testing.
+Active public-ish demo endpoints remain limited to getMany with explicit fields:
+name, employee_name, status, company, department
+```
+
+Bug fixed during audit:
+
+```text
+API v2 named document GET previously used a trailing slash:
+/api/v2/document/Employee/HR-EMP-00001/
+
+Frappe redirected that URL and n8n eventually timed out.
+The v2 named document endpoint was fixed to:
+/api/v2/document/Employee/HR-EMP-00001
+```
+
+Retest matrix:
+
+```text
+GET /webhook/erpnext-hrms-get-employees                     HTTP 200
+GET /webhook/erpnext-hrms-v2-get-employees                  HTTP 200
+GET /webhook/erpnext-hrms-get-employee?name=HR-EMP-00001    HTTP 200 during test, then deactivated
+GET /webhook/erpnext-hrms-v2-get-employee?name=HR-EMP-00001 HTTP 200 during test, then deactivated
+```
+
+Stress test:
+
+```text
+50 requests per endpoint
+4 endpoints
+200 total requests
+concurrency: 10
+
+200 / 200 requests returned HTTP 200
+0 errors
+total duration: 6264 ms
+```
+
+Latency summary:
+
+```text
+getMany v1:      min 263 ms | p50 342 ms | p95 389 ms | max 400 ms
+getMany v2:      min 201 ms | p50 295 ms | p95 455 ms | max 472 ms
+get single v1:   min 232 ms | p50 288 ms | p95 308 ms | max 313 ms
+get single v2:   min 215 ms | p50 280 ms | p95 360 ms | max 367 ms
+```
+
+Final state after this audit:
+
+```text
+cY31OLkUamjHrm01  ERPNext HRMS GET Employees Webhook       active true
+cY31OLkUamjHrm02  ERPNext HRMS V2 GET Employees Webhook    active true
+cY31OLkUamjHrm03  ERPNext HRMS GET Employee By ID Webhooks active false
+```
+
+### Final GET Audit Across Supported Resources
+
+Final audit workflow artifact:
+
+```text
+n8n-webhook-erpnext-hrms-final-get-audit.workflow.json
+```
+
+Temporary workflow:
+
+```text
+Workflow name: ERPNext HRMS Final GET Audit Webhooks
+Workflow id: cY31OLkUamjHrm04
+Status after audit: active false
+```
+
+Pre-test ERPNext data count:
+
+```text
+Employee           1
+Attendance         1
+Employee Checkin   1
+Leave Application  0
+Leave Allocation   0
+Expense Claim      0
+Salary Slip        0
+Shift Assignment   0
+Holiday List       1
+User               4
+```
+
+Audit result:
+
+```text
+Employee                  HTTP 200  count 1
+Attendance                HTTP 200  count 1
+Employee Checkin          HTTP 200  count 1
+Leave Application         HTTP 200  count 0
+Leave Allocation          HTTP 200  count 0
+Expense Claim             HTTP 200  count 0
+Salary Slip               HTTP 200  count 0
+Shift Assignment          HTTP 200  count 0
+Holiday List              HTTP 200  count 1
+Custom DocType Company    HTTP 200  count 1
+Frappe Method get_count   HTTP 200  result 1
+```
+
+Detailed previews:
+
+```json
+[
+  {
+    "name": "Employee",
+    "status": 200,
+    "count": 1,
+    "preview": {
+      "name": "HR-EMP-00001",
+      "employee_name": "Tèo Văn Nguyễn",
+      "status": "Active",
+      "company": "Thái Duy Digital",
+      "department": "Human Resources - TDD"
+    }
+  },
+  {
+    "name": "Attendance",
+    "status": 200,
+    "count": 1,
+    "preview": {
+      "name": "HR-ATT-2026-00001",
+      "employee": "HR-EMP-00001",
+      "status": "Half Day",
+      "attendance_date": "2026-05-15",
+      "company": "Thái Duy Digital"
+    }
+  },
+  {
+    "name": "Employee Checkin",
+    "status": 200,
+    "count": 1,
+    "preview": {
+      "name": "EMP-CKIN-05-2026-000001",
+      "employee": "HR-EMP-00001",
+      "time": "2026-05-13 16:21:13",
+      "log_type": "IN"
+    }
+  },
+  {
+    "name": "Holiday List",
+    "status": 200,
+    "count": 1,
+    "preview": {
+      "name": "Default Holiday List",
+      "holiday_list_name": "Default Holiday List",
+      "from_date": "2026-05-13",
+      "to_date": "2026-12-31"
+    }
+  },
+  {
+    "name": "Custom DocType Company",
+    "status": 200,
+    "count": 1,
+    "preview": {
+      "name": "Thái Duy Digital"
+    }
+  },
+  {
+    "name": "Frappe Method Employee Count",
+    "status": 200,
+    "preview": 1
+  }
+]
+```
+
+Resources with no records returned HTTP 200 and empty arrays:
+
+```text
+Leave Application
+Leave Allocation
+Expense Claim
+Salary Slip
+Shift Assignment
+```
+
+Final state after the final GET audit:
+
+```text
+cY31OLkUamjHrm01  ERPNext HRMS GET Employees Webhook          active true
+cY31OLkUamjHrm02  ERPNext HRMS V2 GET Employees Webhook       active true
+cY31OLkUamjHrm03  ERPNext HRMS GET Employee By ID Webhooks    active false
+cY31OLkUamjHrm04  ERPNext HRMS Final GET Audit Webhooks       active false
+```
+
+Final verification after deactivating the audit workflow:
+
+```text
+GET /webhook/erpnext-hrms-get-employees     HTTP 200
+GET /webhook/erpnext-hrms-v2-get-employees  HTTP 200
+```
+
+Public evaluation status:
+
+- All supported HRMS resources were exercised through the n8n node with `getMany`.
+- `Custom DocType` was exercised with `Company`.
+- `Frappe Method` was exercised with `frappe.client.get_count`.
+- Empty DocTypes returned safely as `[]`.
+- Temporary audit workflows were deactivated after testing.
+- Active public demo endpoints are limited to selected Employee fields to reduce PII exposure.
+
 ## Security Baseline
 
 HRMS data usually includes personal, attendance, leave, payroll, and identity-related records. Treat every workflow as sensitive by default.
