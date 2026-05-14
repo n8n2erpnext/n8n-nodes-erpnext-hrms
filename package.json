@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-erpnext-hrms",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "n8n community nodes for ERPNext/Frappe HRMS v15-v16.",
   "keywords": [
     "n8n-community-node-package",
