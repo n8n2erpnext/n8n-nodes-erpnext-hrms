@@ -1,0 +1,328 @@
+[
+  {
+    "id": "hrmsAttendanceLifecycleTest01",
+    "name": "ERPNext HRMS Attendance Lifecycle Test",
+    "active": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "erpnext-hrms-create-attendance-lifecycle-test",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          -360
+        ],
+        "id": "3d9e8d7c-7c27-4540-95f1-3b13b8fd02c1",
+        "name": "POST Create Lifecycle Attendance Webhook",
+        "webhookId": "erpnext-hrms-create-attendance-lifecycle-test"
+      },
+      {
+        "parameters": {
+          "resource": "attendance",
+          "apiVersion": "v2",
+          "operation": "create",
+          "dataJson": "{\"employee\":\"HR-EMP-00001\",\"attendance_date\":\"2026-05-14\",\"status\":\"Present\",\"company\":\"Thái Duy Digital\"}"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [
+          320,
+          -360
+        ],
+        "id": "a567d741-7b65-4db3-9345-9c8d57362f29",
+        "name": "Create Lifecycle Attendance",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "erpnext-hrms-update-attendance-lifecycle-test",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          -120
+        ],
+        "id": "1ec6170f-5596-40b1-8276-b5414fbc8666",
+        "name": "POST Update Attendance Webhook",
+        "webhookId": "erpnext-hrms-update-attendance-lifecycle-test"
+      },
+      {
+        "parameters": {
+          "resource": "attendance",
+          "apiVersion": "v2",
+          "operation": "update",
+          "documentName": "={{$json.query.name}}",
+          "dataJson": "{\"status\":\"Half Day\"}"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [
+          320,
+          -120
+        ],
+        "id": "fba56136-8f70-4639-9f7e-83af8852f434",
+        "name": "Update Attendance",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "erpnext-hrms-submit-attendance-lifecycle-test",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          120
+        ],
+        "id": "8d475829-7175-43d1-80ec-a8c043ed4e62",
+        "name": "POST Submit Attendance Webhook",
+        "webhookId": "erpnext-hrms-submit-attendance-lifecycle-test"
+      },
+      {
+        "parameters": {
+          "resource": "attendance",
+          "apiVersion": "v2",
+          "operation": "submit",
+          "documentName": "={{$json.query.name}}"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [
+          320,
+          120
+        ],
+        "id": "4632b382-8858-48b4-85ea-26239cf7c218",
+        "name": "Submit Attendance",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "erpnext-hrms-cancel-attendance-lifecycle-test",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          360
+        ],
+        "id": "54a3c7c4-f6f8-44c2-8894-050cbb97d2d3",
+        "name": "POST Cancel Attendance Webhook",
+        "webhookId": "erpnext-hrms-cancel-attendance-lifecycle-test"
+      },
+      {
+        "parameters": {
+          "resource": "attendance",
+          "apiVersion": "v2",
+          "operation": "cancel",
+          "documentName": "={{$json.query.name}}"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [
+          320,
+          360
+        ],
+        "id": "66b2096d-fb6b-461d-bacc-e9fde8cebb34",
+        "name": "Cancel Attendance",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "erpnext-hrms-create-attendance-delete-test",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          600
+        ],
+        "id": "2d430aa0-179d-44db-a70f-dfda4a7461e0",
+        "name": "POST Create Delete Attendance Webhook",
+        "webhookId": "erpnext-hrms-create-attendance-delete-test"
+      },
+      {
+        "parameters": {
+          "resource": "attendance",
+          "apiVersion": "v2",
+          "operation": "create",
+          "dataJson": "{\"employee\":\"HR-EMP-00001\",\"attendance_date\":\"2026-05-13\",\"status\":\"Present\",\"company\":\"Thái Duy Digital\"}"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [
+          320,
+          600
+        ],
+        "id": "7d81a0d2-82f4-4936-8e86-a67f85d5a53b",
+        "name": "Create Delete Attendance",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "erpnext-hrms-delete-attendance-test",
+          "responseMode": "lastNode",
+          "responseData": "allEntries",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          840
+        ],
+        "id": "d8ad5213-eb1f-4702-9d78-fb76433d437f",
+        "name": "POST Delete Attendance Webhook",
+        "webhookId": "erpnext-hrms-delete-attendance-test"
+      },
+      {
+        "parameters": {
+          "resource": "attendance",
+          "apiVersion": "v2",
+          "operation": "delete",
+          "documentName": "={{$json.query.name}}"
+        },
+        "type": "n8n-nodes-erpnext-hrms.erpNextHrms",
+        "typeVersion": 1,
+        "position": [
+          320,
+          840
+        ],
+        "id": "590b3b80-50da-49fe-ae65-931f8b84cd3f",
+        "name": "Delete Attendance",
+        "credentials": {
+          "erpNextApi": {
+            "id": "9hFY985G0WpX5Xyt",
+            "name": "ERPNext account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "POST Create Lifecycle Attendance Webhook": {
+        "main": [
+          [
+            {
+              "node": "Create Lifecycle Attendance",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "POST Update Attendance Webhook": {
+        "main": [
+          [
+            {
+              "node": "Update Attendance",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "POST Submit Attendance Webhook": {
+        "main": [
+          [
+            {
+              "node": "Submit Attendance",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "POST Cancel Attendance Webhook": {
+        "main": [
+          [
+            {
+              "node": "Cancel Attendance",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "POST Create Delete Attendance Webhook": {
+        "main": [
+          [
+            {
+              "node": "Create Delete Attendance",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "POST Delete Attendance Webhook": {
+        "main": [
+          [
+            {
+              "node": "Delete Attendance",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate"
+    },
+    "staticData": null,
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "tags": []
+  }
+]

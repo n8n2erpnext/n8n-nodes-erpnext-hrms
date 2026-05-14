@@ -233,9 +233,14 @@ export async function frappeRunDocAction(
 	doc: IDataObject,
 ): Promise<IDataObject> {
 	const method = action === 'submit' ? 'frappe.client.submit' : 'frappe.client.cancel';
-	const response = await frappeApiRequest.call(this, 'POST', `/api/method/${method}`, {
-		doc,
-	});
+	const body =
+		action === 'submit'
+			? { doc }
+			: {
+					doctype: doc.doctype,
+					name: doc.name,
+				};
+	const response = await frappeApiRequest.call(this, 'POST', `/api/method/${method}`, body);
 	return response.message ?? response;
 }
 
